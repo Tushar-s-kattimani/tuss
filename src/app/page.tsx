@@ -208,7 +208,7 @@ export default function NewInvoicePage() {
                               onFocus={() => setShowSearchResults(true)}
                             />
                             {showSearchResults && (
-                              <div className="absolute bottom-full mb-2 w-full left-0 bg-card border rounded-md shadow-lg z-10">
+                              <div className="absolute top-full mt-2 w-full left-0 bg-card border rounded-md shadow-lg z-10">
                                 <ScrollArea className="h-[200px]">
                                   {(productSearch.length > 0 ? filteredProducts : products).map((p) => (
                                     <div key={p.id} onClick={() => addProductToInvoice(p)} className="p-3 hover:bg-accent cursor-pointer flex items-center gap-2">
