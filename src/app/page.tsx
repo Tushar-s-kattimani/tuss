@@ -24,6 +24,7 @@ export default function NewInvoicePage() {
   const [productSearch, setProductSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
     const storedProducts = localStorage.getItem('products');
@@ -57,7 +58,7 @@ export default function NewInvoicePage() {
       total: 0,
     };
     setItems([...items, newItem]);
-    setProductSearch('');
+    setPopoverOpen(false);
   };
 
   const updateItem = (productId: string, newValues: Partial<InvoiceItem>) => {
@@ -121,6 +122,15 @@ export default function NewInvoicePage() {
         setItems([]);
     }, 1000);
   };
+  
+  useEffect(() => {
+    if (productSearch.length > 0 && filteredProducts.length > 0) {
+        setPopoverOpen(true);
+    } else {
+        setPopoverOpen(false);
+    }
+  }, [productSearch, filteredProducts.length]);
+
 
   return (
     <div className="p-4 md:p-6">
@@ -149,7 +159,7 @@ export default function NewInvoicePage() {
               <CardTitle>Create Invoice</CardTitle>
             </CardHeader>
             <CardContent>
-              <Popover open={productSearch.length > 0} onOpenChange={(open) => !open && setProductSearch('')}>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger asChild>
                   <div className="relative">
                     <Input
