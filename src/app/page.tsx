@@ -123,8 +123,9 @@ export default function NewInvoicePage() {
   };
   
   useEffect(() => {
+    // Show results if there's a search term or if the input is focused.
     setShowSearchResults(productSearch.length > 0 || document.activeElement === searchContainerRef.current?.querySelector('input'));
-  }, [productSearch, filteredProducts]);
+  }, [productSearch]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -209,7 +210,7 @@ export default function NewInvoicePage() {
                             {showSearchResults && (
                               <div className="absolute bottom-full mb-2 w-full left-0 bg-card border rounded-md shadow-lg z-10">
                                 <ScrollArea className="h-[200px]">
-                                  {filteredProducts.map((p) => (
+                                  {(productSearch.length > 0 ? filteredProducts : products).map((p) => (
                                     <div key={p.id} onClick={() => addProductToInvoice(p)} className="p-3 hover:bg-accent cursor-pointer flex items-center gap-2">
                                        <Plus className="h-4 w-4 text-muted-foreground" />
                                       {p.name}
