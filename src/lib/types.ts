@@ -23,15 +23,5 @@ export interface Invoice {
   date: string;
   items: InvoiceItem[];
   subtotal: number;
-  discount: {
-    type: 'percentage' | 'flat';
-    value: number;
-  };
-  discountAmount: number;
-  tax: {
-    type: 'gst';
-    value: number; // Stored as a percentage value, e.g., 5 for 5%
-  };
-  taxAmount: number;
   total: number;
 }

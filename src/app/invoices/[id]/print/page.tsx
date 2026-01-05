@@ -109,15 +109,7 @@ export default function PrintInvoicePage({ params }: { params: Promise<{ id: str
             <span className="font-bold">Subtotal:</span>
             <span className="font-mono">{invoice.subtotal.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between py-1">
-            <span className="font-bold">Discount ({invoice.discount.type === 'percentage' ? `${invoice.discount.value}%` : 'Flat'}):</span>
-            <span className="font-mono">- {invoice.discountAmount.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-gray-300">
-            <span className="font-bold">GST ({invoice.tax.value}%):</span>
-            <span className="font-mono">+ {invoice.taxAmount.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between py-2 text-xl font-bold">
+          <div className="flex justify-between py-2 text-xl font-bold border-t border-gray-300 mt-2">
             <span>Total:</span>
             <span className="font-mono flex items-center"><IndianRupee className="h-4 w-4 mr-1"/>{invoice.total.toFixed(2)}</span>
           </div>

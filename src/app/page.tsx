@@ -2,15 +2,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Plus, Printer, Save, IndianRupee } from 'lucide-react';
+import { X, Printer, Save, IndianRupee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/lib/data';
 import type { Product, InvoiceItem, Invoice } from '@/lib/types';
@@ -22,10 +20,6 @@ export default function NewInvoicePage() {
   const { toast } = useToast();
 
   const [items, setItems] = useState<InvoiceItem[]>([]);
-  const [discountType, setDiscountType] = useState<'percentage' | 'flat'>('flat');
-  const [discountValue, setDiscountValue] = useState<number>(0);
-  const [taxValue, setTaxValue] = useState<number>(5); // Default 5% GST
-
   const [productSearch, setProductSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   
@@ -69,19 +63,11 @@ export default function NewInvoicePage() {
     setItems(items.filter((item) => item.productId !== productId));
   };
 
-  const { subtotal, discountAmount, taxAmount, total } = useMemo(() => {
+  const { subtotal, total } = useMemo(() => {
     const subtotal = items.reduce((acc, item) => acc + item.total, 0);
-    let discountAmount = 0;
-    if (discountType === 'flat') {
-      discountAmount = discountValue;
-    } else {
-      discountAmount = (subtotal * discountValue) / 100;
-    }
-    const totalAfterDiscount = subtotal - discountAmount;
-    const taxAmount = (totalAfterDiscount * taxValue) / 100;
-    const total = totalAfterDiscount + taxAmount;
-    return { subtotal, discountAmount, taxAmount, total };
-  }, [items, discountType, discountValue, taxValue]);
+    const total = subtotal;
+    return { subtotal, total };
+  }, [items]);
   
   const handleSaveAndPrint = () => {
     if (items.length === 0) {
@@ -99,10 +85,6 @@ export default function NewInvoicePage() {
         date: new Date().toISOString(),
         items,
         subtotal,
-        discount: { type: discountType, value: discountValue },
-        discountAmount,
-        tax: { type: 'gst', value: taxValue },
-        taxAmount,
         total,
     };
 
@@ -209,34 +191,6 @@ export default function NewInvoicePage() {
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-mono">{subtotal.toFixed(2)}</span>
-              </div>
-              <div className="space-y-2">
-                <Label>Discount</Label>
-                <div className="flex gap-2">
-                    <Select value={discountType} onValueChange={(v: 'percentage' | 'flat') => setDiscountType(v)}>
-                        <SelectTrigger className="w-32 h-10"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="flat">Flat</SelectItem>
-                            <SelectItem value="percentage">%</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Input type="number" min="0" value={discountValue} onChange={e => setDiscountValue(parseFloat(e.target.value) || 0)} className="h-10 text-base" />
-                </div>
-                 <div className="flex justify-between items-center text-sm text-muted-foreground">
-                    <span>Discount Applied</span>
-                    <span className="font-mono">- {discountAmount.toFixed(2)}</span>
-                </div>
-              </div>
-               <div className="space-y-2">
-                <Label>Tax (GST)</Label>
-                 <div className="flex items-center gap-2">
-                    <Input type="number" min="0" value={taxValue} onChange={e => setTaxValue(parseFloat(e.target.value) || 0)} className="h-10 text-base" />
-                    <span className="text-muted-foreground">%</span>
-                </div>
-                 <div className="flex justify-between items-center text-sm text-muted-foreground">
-                    <span>Tax Amount</span>
-                    <span className="font-mono">+ {taxAmount.toFixed(2)}</span>
-                </div>
               </div>
               <div className="border-t pt-4 mt-2 flex justify-between items-center text-2xl font-bold font-headline">
                 <span>Total</span>
