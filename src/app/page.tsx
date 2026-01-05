@@ -60,7 +60,8 @@ export default function NewInvoicePage() {
       total: 0,
     };
     setItems([...items, newItem]);
-    setPopoverOpen(false);
+    // We will not close the popover here, so the user can add more products from the same search
+    // setPopoverOpen(false); 
   };
 
   const updateItem = (productId: string, newValues: Partial<InvoiceItem>) => {
@@ -122,6 +123,7 @@ export default function NewInvoicePage() {
         setIsSaving(false);
         // Reset for next invoice
         setItems([]);
+        setProductSearch('');
     }, 1000);
   };
   
