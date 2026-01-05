@@ -37,9 +37,8 @@ export default function NewInvoicePage() {
   }, []);
   
   const filteredProducts = useMemo(() => {
-    if (!productSearch) return [];
     const searchTerms = productSearch.toLowerCase().split(' ').filter(term => term.trim() !== '');
-    if (searchTerms.length === 0) return [];
+    if (searchTerms.length === 0) return products;
 
     return products.filter((p) => {
         const productName = p.name.toLowerCase();
@@ -61,7 +60,6 @@ export default function NewInvoicePage() {
     };
     setItems([...items, newItem]);
     setProductSearch('');
-    setShowSearchResults(false);
   };
 
   const updateItem = (productId: string, newValues: Partial<InvoiceItem>) => {
@@ -125,7 +123,7 @@ export default function NewInvoicePage() {
   };
   
   useEffect(() => {
-    setShowSearchResults(productSearch.length > 0 && filteredProducts.length > 0);
+    setShowSearchResults(productSearch.length > 0 || document.activeElement === searchContainerRef.current?.querySelector('input'));
   }, [productSearch, filteredProducts]);
 
   useEffect(() => {
@@ -206,7 +204,7 @@ export default function NewInvoicePage() {
                               className="text-base h-12"
                               value={productSearch}
                               onChange={(e) => setProductSearch(e.target.value)}
-                              onFocus={() => productSearch.length > 0 && setShowSearchResults(true)}
+                              onFocus={() => setShowSearchResults(true)}
                             />
                             {showSearchResults && (
                               <div className="absolute bottom-full mb-2 w-full left-0 bg-card border rounded-md shadow-lg z-10">
