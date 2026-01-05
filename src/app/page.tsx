@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Printer, Save, IndianRupee, BarChart } from 'lucide-react';
+import { X, Printer, Save, IndianRupee, BarChart, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { products } from '@/lib/data';
+import { products as staticProducts } from '@/lib/data';
 import type { Product, InvoiceItem, Invoice } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Logo } from '@/components/logo';
@@ -23,6 +23,17 @@ export default function NewInvoicePage() {
   const [items, setItems] = useState<InvoiceItem[]>([]);
   const [productSearch, setProductSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+      setProducts(JSON.parse(storedProducts));
+    } else {
+      setProducts(staticProducts);
+      localStorage.setItem('products', JSON.stringify(staticProducts));
+    }
+  }, []);
   
   const filteredProducts = useMemo(() => {
     if (!productSearch) return [];
@@ -31,7 +42,7 @@ export default function NewInvoicePage() {
         p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
         p.sku.toLowerCase().includes(productSearch.toLowerCase())
     );
-  }, [productSearch]);
+  }, [productSearch, products]);
 
   const addProductToInvoice = (product: Product) => {
     if (items.find((item) => item.productId === product.id)) {
@@ -116,12 +127,20 @@ export default function NewInvoicePage() {
     <div className="flex flex-col gap-6">
       <header className="flex items-center justify-between">
         <Logo />
-        <Button asChild variant="outline">
-          <Link href="/reports">
-            <BarChart className="mr-2 h-4 w-4" />
-            View Reports
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href="/products">
+              <Package className="mr-2 h-4 w-4" />
+              Manage Products
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/reports">
+              <BarChart className="mr-2 h-4 w-4" />
+              View Reports
+            </Link>
+          </Button>
+        </div>
       </header>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
