@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { IndianRupee } from 'lucide-react';
@@ -8,7 +8,8 @@ import { IndianRupee } from 'lucide-react';
 import type { Invoice } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-export default function PrintInvoicePage({ params }: { params: { id: string } }) {
+export default function PrintInvoicePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
 
   useEffect(() => {
@@ -16,11 +17,11 @@ export default function PrintInvoicePage({ params }: { params: { id: string } })
     if (savedInvoice) {
       const parsedInvoice: Invoice = JSON.parse(savedInvoice);
       // Ensure the ID matches to prevent showing the wrong invoice if navigating directly
-      if (parsedInvoice.id === `inv-${params.id}`) {
+      if (parsedInvoice.id === `inv-${id}`) {
         setInvoice(parsedInvoice);
       }
     }
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     if (invoice) {
