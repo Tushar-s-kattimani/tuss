@@ -1,19 +1,3 @@
-import type { Product, Invoice } from './types';
-import { subDays } from 'date-fns';
+import type { Product } from './types';
 
-export const products: Product[] = [
-  { id: 'prod-001', name: 'Pepsi 500ml', sku: 'P500', category: 'Pepsi', priceBox: 240, pricePiece: 20, stock: 150, lowStockThreshold: 20 },
-  { id: 'prod-002', name: '7Up 500ml', sku: '7U500', category: '7Up', priceBox: 240, pricePiece: 20, stock: 8, lowStockThreshold: 10 },
-  { id: 'prod-003', name: 'Mirinda 500ml', sku: 'M500', category: 'Other', priceBox: 240, pricePiece: 20, stock: 120, lowStockThreshold: 20 },
-  { id: 'prod-004', name: 'Mountain Dew 500ml', sku: 'MD500', category: 'Other', priceBox: 250, pricePiece: 22, stock: 90, lowStockThreshold: 20 },
-  { id: 'prod-005', name: 'Pepsi Black 500ml', sku: 'PB500', category: 'Pepsi', priceBox: 300, pricePiece: 25, stock: 75, lowStockThreshold: 15 },
-  { id: 'prod-006', name: '7Up Revive 500ml', sku: '7UR500', category: '7Up', priceBox: 280, pricePiece: 24, stock: 5, lowStockThreshold: 10 },
-  { id: 'prod-007', name: 'Sting Energy 250ml', sku: 'SE250', category: 'Other', priceBox: 480, pricePiece: 20, stock: 200, lowStockThreshold: 30 },
-  { id: 'prod-008', name: 'Pepsi 1.5L', sku: 'P1500', category: 'Pepsi', priceBox: 480, pricePiece: 40, stock: 60, lowStockThreshold: 10 },
-  { id: 'prod-009', name: '7Up 1.5L', sku: '7U1500', category: '7Up', priceBox: 480, pricePiece: 40, stock: 40, lowStockThreshold: 10 },
-  { id: 'prod-010', name: 'Tropicana Orange 1L', sku: 'TO1000', category: 'Juice', priceBox: 1200, pricePiece: 100, stock: 50, lowStockThreshold: 15 },
-  { id: 'prod-011', name: 'Slice 600ml', sku: 'SL600', category: 'Juice', priceBox: 360, pricePiece: 30, stock: 80, lowStockThreshold: 20 },
-  { id: 'prod-012', name: 'Lipton Ice Tea 500ml', sku: 'LIT500', category: 'Other', priceBox: 300, pricePiece: 25, stock: 60, lowStockThreshold: 15 },
-  { id: 'prod-013', name: 'Aquafina Water 1L', sku: 'AQ1000', category: 'Water', priceBox: 240, pricePiece: 20, stock: 300, lowStockThreshold: 50 },
-  { id: 'prod-014', name: 'Gatorade Blue Bolt 500ml', sku: 'GBB500', category: 'Other', priceBox: 540, pricePiece: 45, stock: 70, lowStockThreshold: 20 },
-];
+export const products: Product[] = [];
