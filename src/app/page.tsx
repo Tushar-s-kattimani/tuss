@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Printer, Save, IndianRupee, BarChart, Package } from 'lucide-react';
+import { X, Printer, Save, IndianRupee, BarChart, Package, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
@@ -24,7 +23,8 @@ export default function NewInvoicePage() {
   const [productSearch, setProductSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const storedProducts = localStorage.getItem('products');
@@ -60,8 +60,8 @@ export default function NewInvoicePage() {
       total: 0,
     };
     setItems([...items, newItem]);
-    // We will not close the popover here, so the user can add more products from the same search
-    // setPopoverOpen(false); 
+    setProductSearch('');
+    setShowSearchResults(false);
   };
 
   const updateItem = (productId: string, newValues: Partial<InvoiceItem>) => {
@@ -102,10 +102,8 @@ export default function NewInvoicePage() {
         total,
     };
 
-    // Store in session storage for the print page
     sessionStorage.setItem('latestInvoice', JSON.stringify(newInvoice));
 
-    // Store in local storage for reports
     const allInvoices: Invoice[] = JSON.parse(localStorage.getItem('invoices') || '[]');
     allInvoices.push(newInvoice);
     localStorage.setItem('invoices', JSON.stringify(allInvoices));
@@ -121,20 +119,26 @@ export default function NewInvoicePage() {
           router.push(printUrl);
         }
         setIsSaving(false);
-        // Reset for next invoice
         setItems([]);
         setProductSearch('');
     }, 1000);
   };
   
   useEffect(() => {
-    if (productSearch.length > 0 && filteredProducts.length > 0) {
-        setPopoverOpen(true);
-    } else {
-        setPopoverOpen(false);
-    }
-  }, [productSearch, filteredProducts.length]);
+    setShowSearchResults(productSearch.length > 0 && filteredProducts.length > 0);
+  }, [productSearch, filteredProducts]);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowSearchResults(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchContainerRef]);
 
   return (
     <div className="p-4 md:p-6">
@@ -163,37 +167,11 @@ export default function NewInvoicePage() {
               <CardTitle>Create Invoice</CardTitle>
             </CardHeader>
             <CardContent>
-              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <div className="relative">
-                    <Input
-                      placeholder="Search for product by name..."
-                      className="text-base h-12"
-                      value={productSearch}
-                      onChange={(e) => setProductSearch(e.target.value)}
-                    />
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                  <ScrollArea className="h-[200px]">
-                    {filteredProducts.length > 0 ? (
-                      filteredProducts.map((p) => (
-                        <div key={p.id} onClick={() => addProductToInvoice(p)} className="p-2 hover:bg-accent cursor-pointer">
-                          {p.name}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-2 text-sm text-muted-foreground">No products found.</div>
-                    )}
-                  </ScrollArea>
-                </PopoverContent>
-              </Popover>
-
               <div className="mt-4">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Product</TableHead>
+                      <TableHead className="w-[40%]">Product</TableHead>
                       <TableHead>Boxes</TableHead>
                       <TableHead>Pieces</TableHead>
                       <TableHead className="text-right">Total</TableHead>
@@ -220,6 +198,31 @@ export default function NewInvoicePage() {
                         </TableCell>
                       </TableRow>
                     ))}
+                     <TableRow>
+                        <TableCell colSpan={5} className="p-0">
+                           <div className="relative p-2" ref={searchContainerRef}>
+                            <Input
+                              placeholder="Search to add a product..."
+                              className="text-base h-12"
+                              value={productSearch}
+                              onChange={(e) => setProductSearch(e.target.value)}
+                              onFocus={() => productSearch.length > 0 && setShowSearchResults(true)}
+                            />
+                            {showSearchResults && (
+                              <div className="absolute bottom-full mb-2 w-full left-0 bg-card border rounded-md shadow-lg z-10">
+                                <ScrollArea className="h-[200px]">
+                                  {filteredProducts.map((p) => (
+                                    <div key={p.id} onClick={() => addProductToInvoice(p)} className="p-3 hover:bg-accent cursor-pointer flex items-center gap-2">
+                                       <Plus className="h-4 w-4 text-muted-foreground" />
+                                      {p.name}
+                                    </div>
+                                  ))}
+                                </ScrollArea>
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
                   </TableBody>
                 </Table>
               </div>
@@ -243,7 +246,7 @@ export default function NewInvoicePage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-                <Button size="lg" className="w-full text-lg h-14" onClick={handleSaveAndPrint} disabled={isSaving}>
+                <Button size="lg" className="w-full text-lg h-14" onClick={handleSaveAndPrint} disabled={isSaving || items.length === 0}>
                     {isSaving ? 'Saving...' : <><Save className="mr-2 h-5 w-5" /> Save & Print</>}
                 </Button>
                 <Alert variant="default" className="text-center">
