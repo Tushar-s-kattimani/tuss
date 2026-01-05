@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Printer, Save, IndianRupee } from 'lucide-react';
+import { X, Printer, Save, IndianRupee, BarChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { products } from '@/lib/data';
 import type { Product, InvoiceItem, Invoice } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Logo } from '@/components/logo';
+import Link from 'next/link';
 
 export default function NewInvoicePage() {
   const router = useRouter();
@@ -76,8 +77,6 @@ export default function NewInvoicePage() {
     }
     setIsSaving(true);
     
-    // In a real app, this would be an API call to save the invoice.
-    // Here we just simulate it and prepare for printing.
     const newInvoiceId = `${Date.now()}`;
     const newInvoice: Invoice = {
         id: `inv-${newInvoiceId}`,
@@ -88,8 +87,13 @@ export default function NewInvoicePage() {
         total,
     };
 
-    // Store in session storage to pass to print page
+    // Store in session storage for the print page
     sessionStorage.setItem('latestInvoice', JSON.stringify(newInvoice));
+
+    // Store in local storage for reports
+    const allInvoices: Invoice[] = JSON.parse(localStorage.getItem('invoices') || '[]');
+    allInvoices.push(newInvoice);
+    localStorage.setItem('invoices', JSON.stringify(allInvoices));
     
     toast({ title: 'Invoice Saved!', description: 'Preparing for printing...' });
     
@@ -102,20 +106,28 @@ export default function NewInvoicePage() {
           router.push(printUrl);
         }
         setIsSaving(false);
+        // Reset for next invoice
+        setItems([]);
     }, 1000);
   };
 
   return (
     <div className="p-4 md:p-6">
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+      <header className="flex items-center justify-between">
         <Logo />
-      </div>
+        <Button asChild variant="outline">
+          <Link href="/reports">
+            <BarChart className="mr-2 h-4 w-4" />
+            View Reports
+          </Link>
+        </Button>
+      </header>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Products</CardTitle>
+              <CardTitle>Create Invoice</CardTitle>
             </CardHeader>
             <CardContent>
               <Popover open={productSearch.length > 0} onOpenChange={(open) => !open && setProductSearch('')}>
