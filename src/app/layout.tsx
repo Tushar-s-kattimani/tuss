@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BevBooks',
+  title: 'Ghajanan Enterprise',
   description: 'Billing software for beverage distributors',
 };
 

@@ -64,14 +64,14 @@ export default function PrintInvoicePage({ params }: { params: Promise<{ id: str
           {logoPlaceholder && (
             <Image
               src={logoPlaceholder.imageUrl}
-              alt="BevBooks Logo"
+              alt="Ghajanan Enterprise Logo"
               width={200}
               height={50}
               data-ai-hint={logoPlaceholder.imageHint}
               priority
             />
           )}
-          <h1 className="text-xs text-gray-600 mt-2">BevBooks Billing</h1>
+          <h1 className="text-xs text-gray-600 mt-2">Ghajanan Enterprise Billing</h1>
         </div>
         <div className="text-right">
           <h2 className="text-2xl font-bold uppercase">Invoice</h2>
