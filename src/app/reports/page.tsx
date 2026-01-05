@@ -15,6 +15,7 @@ interface ProductSummary {
   productId: string;
   productName: string;
   totalBoxes: number;
+  totalPieces: number;
   totalAmount: number;
 }
 
@@ -42,10 +43,12 @@ export default function ReportsPage() {
             productId: item.productId,
             productName: item.productName,
             totalBoxes: 0,
+            totalPieces: 0,
             totalAmount: 0,
           };
         }
         summary[item.productId].totalBoxes += item.boxes || 0;
+        summary[item.productId].totalPieces += item.pieces || 0;
         summary[item.productId].totalAmount += item.total;
       });
     });
@@ -84,7 +87,8 @@ export default function ReportsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Product</TableHead>
-                      <TableHead className="text-center">Total Boxes Sold</TableHead>
+                      <TableHead className="text-center">Boxes Sold</TableHead>
+                      <TableHead className="text-center">Pieces Sold</TableHead>
                       <TableHead className="text-right">Total Sales</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -93,6 +97,7 @@ export default function ReportsPage() {
                       <TableRow key={product.productId}>
                         <TableCell className="font-medium">{product.productName}</TableCell>
                         <TableCell className="text-center font-mono">{product.totalBoxes}</TableCell>
+                        <TableCell className="text-center font-mono">{product.totalPieces}</TableCell>
                         <TableCell className="text-right font-mono flex items-center justify-end gap-1">
                           <IndianRupee className="h-4 w-4" />
                           {product.totalAmount.toFixed(2)}
