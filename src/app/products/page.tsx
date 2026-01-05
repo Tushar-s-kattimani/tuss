@@ -26,12 +26,6 @@ import { Logo } from '@/components/logo';
 
 const productSchema = z.object({
   name: z.string().min(2, { message: 'Product name is required.' }),
-  sku: z.string().min(2, { message: 'SKU is required.' }),
-  category: z.string().min(2, { message: 'Category is required.' }),
-  priceBox: z.coerce.number().min(0, { message: 'Price must be a positive number.' }),
-  pricePiece: z.coerce.number().min(0, { message: 'Price must be a positive number.' }),
-  stock: z.coerce.number().min(0, { message: 'Stock must be a positive number.' }),
-  lowStockThreshold: z.coerce.number().min(0, { message: 'Threshold must be a positive number.' }),
 });
 
 export default function ProductsPage() {
@@ -54,19 +48,19 @@ export default function ProductsPage() {
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: '',
-      sku: '',
-      category: '',
-      priceBox: 0,
-      pricePiece: 0,
-      stock: 0,
-      lowStockThreshold: 10,
     },
   });
 
   function onSubmit(values: z.infer<typeof productSchema>) {
     const newProduct: Product = {
       id: `prod-${Date.now()}`,
-      ...values,
+      name: values.name,
+      sku: '',
+      category: '',
+      priceBox: 0,
+      pricePiece: 0,
+      stock: 0,
+      lowStockThreshold: 0,
     };
     const updatedProducts = [...products, newProduct];
     setProducts(updatedProducts);
@@ -103,22 +97,12 @@ export default function ProductsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
-                      <TableHead>SKU</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead className="text-right">Price (Box)</TableHead>
-                      <TableHead className="text-right">Price (Piece)</TableHead>
-                      <TableHead className="text-center">Stock</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {products.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.sku}</TableCell>
-                        <TableCell>{product.category}</TableCell>
-                        <TableCell className="text-right font-mono">{product.priceBox.toFixed(2)}</TableCell>
-                        <TableCell className="text-right font-mono">{product.pricePiece.toFixed(2)}</TableCell>
-                        <TableCell className="text-center font-mono">{product.stock}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -148,88 +132,6 @@ export default function ProductsPage() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="sku"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>SKU</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., P500" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Pepsi" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                     <FormField
-                        control={form.control}
-                        name="priceBox"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Price/Box</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="pricePiece"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Price/Piece</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                  </div>
-                   <div className="grid grid-cols-2 gap-4">
-                     <FormField
-                        control={form.control}
-                        name="stock"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Stock</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="lowStockThreshold"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Low Stock Alert</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                  </div>
                   <Button type="submit" className="w-full">
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Product
                   </Button>
