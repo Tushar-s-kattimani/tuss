@@ -6,7 +6,6 @@ import { format } from 'date-fns';
 import { IndianRupee } from 'lucide-react';
 
 import type { Invoice } from '@/lib/types';
-import { customers } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function PrintInvoicePage({ params }: { params: { id: string } }) {
@@ -34,7 +33,6 @@ export default function PrintInvoicePage({ params }: { params: { id: string } })
   }, [invoice]);
   
   const logoPlaceholder = PlaceHolderImages.find(p => p.id === 'logo');
-  const customer = customers.find(c => c.id === invoice?.customerId);
 
   if (!invoice) {
     return <div className="p-10 text-center">Loading invoice for printing...</div>;
@@ -81,16 +79,7 @@ export default function PrintInvoicePage({ params }: { params: { id: string } })
         </div>
       </header>
 
-      <section className="flex justify-between items-start py-4">
-        <div>
-          <h3 className="font-bold text-sm mb-1">Bill To:</h3>
-          <p className="font-bold">{customer?.name}</p>
-          <p className="text-sm">{customer?.address}</p>
-          <p className="text-sm">Phone: {customer?.phone}</p>
-        </div>
-      </section>
-
-      <section>
+      <section className="py-4">
         <table className="w-full text-sm">
           <thead className="bg-gray-100">
             <tr>

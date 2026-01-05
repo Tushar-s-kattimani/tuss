@@ -12,8 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { customers, products } from '@/lib/data';
-import type { Customer, Product, InvoiceItem, Invoice } from '@/lib/types';
+import { products } from '@/lib/data';
+import type { Product, InvoiceItem, Invoice } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Logo } from '@/components/logo';
 
@@ -21,7 +21,6 @@ export default function NewInvoicePage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [items, setItems] = useState<InvoiceItem[]>([]);
   const [discountType, setDiscountType] = useState<'percentage' | 'flat'>('flat');
   const [discountValue, setDiscountValue] = useState<number>(0);
@@ -89,10 +88,6 @@ export default function NewInvoicePage() {
   }, [items, discountType, discountValue, taxValue]);
   
   const handleSaveAndPrint = () => {
-    if (!selectedCustomerId) {
-        toast({ title: 'Error', description: 'Please select a customer.', variant: 'destructive' });
-        return;
-    }
     if (items.length === 0) {
         toast({ title: 'Error', description: 'Please add at least one product.', variant: 'destructive' });
         return;
@@ -105,8 +100,6 @@ export default function NewInvoicePage() {
     const newInvoice: Invoice = {
         id: `inv-${newInvoiceId}`,
         invoiceNumber: `2024-${Math.floor(Math.random() * 1000)}`,
-        customerId: selectedCustomerId,
-        customerName: customers.find(c => c.id === selectedCustomerId)?.name || '',
         date: new Date().toISOString(),
         items,
         subtotal,
@@ -142,25 +135,6 @@ export default function NewInvoicePage() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Select onValueChange={setSelectedCustomerId} value={selectedCustomerId}>
-                <SelectTrigger className="text-base h-12">
-                  <SelectValue placeholder="Select a customer" />
-                </SelectTrigger>
-                <SelectContent>
-                  {customers.map((customer) => (
-                    <SelectItem key={customer.id} value={customer.id} className="text-base">
-                      {customer.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </CardContent>
-          </Card>
           <Card>
             <CardHeader>
               <CardTitle>Products</CardTitle>

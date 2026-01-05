@@ -1,4 +1,4 @@
-import type { Product, Customer, Invoice } from './types';
+import type { Product, Invoice } from './types';
 import { subDays } from 'date-fns';
 
 export const products: Product[] = [
@@ -16,12 +16,4 @@ export const products: Product[] = [
   { id: 'prod-012', name: 'Lipton Ice Tea 500ml', sku: 'LIT500', category: 'Other', priceBox: 300, pricePiece: 25, stock: 60, lowStockThreshold: 15 },
   { id: 'prod-013', name: 'Aquafina Water 1L', sku: 'AQ1000', category: 'Water', priceBox: 240, pricePiece: 20, stock: 300, lowStockThreshold: 50 },
   { id: 'prod-014', name: 'Gatorade Blue Bolt 500ml', sku: 'GBB500', category: 'Other', priceBox: 540, pricePiece: 45, stock: 70, lowStockThreshold: 20 },
-];
-
-export const customers: Customer[] = [
-  { id: 'cust-001', name: 'Star General Store', phone: '9876543210', address: '123 Main St, Cityville', outstandingBalance: 1500.50 },
-  { id: 'cust-002', name: 'Quick Mart', phone: '8765432109', address: '456 Oak Ave, Townsville', outstandingBalance: 0 },
-  { id: 'cust-003', name: 'Daily Needs', phone: '7654321098', address: '789 Pine Ln, Villageton', outstandingBalance: 320.00 },
-  { id: 'cust-004', name: 'Honest Grocers', phone: '6543210987', address: '101 Maple Dr, Suburbia', outstandingBalance: 8540.75 },
-  { id: 'cust-005', name: 'Beverage Corner', phone: '5432109876', address: '212 Birch Rd, Hamlet', outstandingBalance: 210.00 },
 ];

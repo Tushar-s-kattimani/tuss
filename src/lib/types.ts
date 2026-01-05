@@ -9,14 +9,6 @@ export interface Product {
   lowStockThreshold: number;
 }
 
-export interface Customer {
-  id: string;
-  name: string;
-  phone: string;
-  address: string;
-  outstandingBalance: number;
-}
-
 export interface InvoiceItem {
   productId: string;
   productName: string;
@@ -30,8 +22,6 @@ export interface InvoiceItem {
 export interface Invoice {
   id: string;
   invoiceNumber: string;
-  customerId: string;
-  customerName: string;
   date: string;
   items: InvoiceItem[];
   subtotal: number;
