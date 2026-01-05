@@ -58,16 +58,7 @@ export default function NewInvoicePage() {
     setItems(
       items.map((item) => {
         if (item.productId === productId) {
-          const product = products.find(p => p.id === productId);
-          if (!product) return item;
-
-          const updatedItem = { ...item, ...newValues };
-          const boxes = updatedItem.boxes || 0;
-          const pieces = updatedItem.pieces || 0;
-          
-          const total = (boxes * product.priceBox) + (pieces * product.pricePiece);
-          
-          return { ...updatedItem, total };
+          return { ...item, ...newValues };
         }
         return item;
       })
@@ -193,7 +184,7 @@ export default function NewInvoicePage() {
                           <Input type="number" min="0" value={item.pieces || ''} onChange={(e) => updateItem(item.productId, { pieces: parseInt(e.target.value) || 0 })} className="w-20 h-10 text-base" />
                         </TableCell>
                         <TableCell className="text-right font-mono">
-                          {item.total.toFixed(2)}
+                          <Input type="number" min="0" value={item.total || ''} onChange={(e) => updateItem(item.productId, { total: parseFloat(e.target.value) || 0 })} className="w-24 h-10 text-base text-right" />
                         </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon" onClick={() => removeItem(item.productId)}>
