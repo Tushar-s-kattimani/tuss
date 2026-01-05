@@ -46,6 +46,8 @@ export default function NewInvoicePage() {
     const newItem: InvoiceItem = {
       productId: product.id,
       productName: product.name,
+      boxes: 0,
+      pieces: 0,
       total: 0,
     };
     setItems([...items, newItem]);
@@ -56,7 +58,16 @@ export default function NewInvoicePage() {
     setItems(
       items.map((item) => {
         if (item.productId === productId) {
-          return { ...item, ...newValues };
+          const product = products.find(p => p.id === productId);
+          if (!product) return item;
+
+          const updatedItem = { ...item, ...newValues };
+          const boxes = updatedItem.boxes || 0;
+          const pieces = updatedItem.pieces || 0;
+          
+          const total = (boxes * product.priceBox) + (pieces * product.pricePiece);
+          
+          return { ...updatedItem, total };
         }
         return item;
       })
@@ -165,6 +176,8 @@ export default function NewInvoicePage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Product</TableHead>
+                      <TableHead>Boxes</TableHead>
+                      <TableHead>Pieces</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
@@ -173,8 +186,14 @@ export default function NewInvoicePage() {
                     {items.map((item) => (
                       <TableRow key={item.productId}>
                         <TableCell className="font-medium">{item.productName}</TableCell>
-                        <TableCell className="text-right">
-                          <Input type="number" min="0" value={item.total} onChange={(e) => updateItem(item.productId, { total: parseFloat(e.target.value) || 0 })} className="w-32 h-10 text-base ml-auto" />
+                        <TableCell>
+                          <Input type="number" min="0" value={item.boxes || ''} onChange={(e) => updateItem(item.productId, { boxes: parseInt(e.target.value) || 0 })} className="w-20 h-10 text-base" />
+                        </TableCell>
+                         <TableCell>
+                          <Input type="number" min="0" value={item.pieces || ''} onChange={(e) => updateItem(item.productId, { pieces: parseInt(e.target.value) || 0 })} className="w-20 h-10 text-base" />
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          {item.total.toFixed(2)}
                         </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon" onClick={() => removeItem(item.productId)}>
