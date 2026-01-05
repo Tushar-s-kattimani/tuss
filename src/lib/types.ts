@@ -12,10 +12,6 @@ export interface Product {
 export interface InvoiceItem {
   productId: string;
   productName: string;
-  qtyBox: number;
-  qtyPiece: number;
-  priceBox: number;
-  pricePiece: number;
   total: number;
 }
 

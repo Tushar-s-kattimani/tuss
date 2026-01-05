@@ -85,9 +85,6 @@ export default function PrintInvoicePage({ params }: { params: Promise<{ id: str
           <thead className="bg-gray-100">
             <tr>
               <th className="p-2 text-left font-bold">Item</th>
-              <th className="p-2 text-right font-bold">Qty (Box)</th>
-              <th className="p-2 text-right font-bold">Qty (Piece)</th>
-              <th className="p-2 text-right font-bold">Rate</th>
               <th className="p-2 text-right font-bold">Amount</th>
             </tr>
           </thead>
@@ -95,13 +92,6 @@ export default function PrintInvoicePage({ params }: { params: Promise<{ id: str
             {invoice.items.map((item) => (
               <tr key={item.productId} className="border-b border-gray-200">
                 <td className="p-2">{item.productName}</td>
-                <td className="p-2 text-right">{item.qtyBox > 0 ? item.qtyBox : '-'}</td>
-                <td className="p-2 text-right">{item.qtyPiece > 0 ? item.qtyPiece : '-'}</td>
-                <td className="p-2 text-right">
-                  {item.qtyBox > 0 && <span>{item.priceBox.toFixed(2)}/box</span>}
-                  {item.qtyBox > 0 && item.qtyPiece > 0 && <br />}
-                  {item.qtyPiece > 0 && <span>{item.pricePiece.toFixed(2)}/pc</span>}
-                </td>
                 <td className="p-2 text-right font-mono">{item.total.toFixed(2)}</td>
               </tr>
             ))}
