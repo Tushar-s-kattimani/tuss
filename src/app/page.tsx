@@ -38,11 +38,13 @@ export default function NewInvoicePage() {
   
   const filteredProducts = useMemo(() => {
     if (!productSearch) return [];
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-        p.sku.toLowerCase().includes(productSearch.toLowerCase())
-    );
+    const searchTerms = productSearch.toLowerCase().split(' ').filter(term => term.trim() !== '');
+    if (searchTerms.length === 0) return [];
+
+    return products.filter((p) => {
+        const productName = p.name.toLowerCase();
+        return searchTerms.every(term => productName.includes(term));
+    });
   }, [productSearch, products]);
 
   const addProductToInvoice = (product: Product) => {
@@ -163,7 +165,7 @@ export default function NewInvoicePage() {
                 <PopoverTrigger asChild>
                   <div className="relative">
                     <Input
-                      placeholder="Search for product by name or SKU..."
+                      placeholder="Search for product by name..."
                       className="text-base h-12"
                       value={productSearch}
                       onChange={(e) => setProductSearch(e.target.value)}
