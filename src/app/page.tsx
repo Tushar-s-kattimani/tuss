@@ -14,17 +14,17 @@ import type { Product, InvoiceItem, Invoice } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 export default function NewInvoicePage() {
   const router = useRouter();
   const { toast } = useToast();
 
   const [items, setItems] = useState<InvoiceItem[]>([]);
-  const [productSearch, setProductSearch] = useState('');
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const storedProducts = localStorage.getItem('products');
@@ -35,31 +35,35 @@ export default function NewInvoicePage() {
       localStorage.setItem('products', JSON.stringify(staticProducts));
     }
   }, []);
+
+  const handleProductSelection = (productId: string) => {
+    setSelectedProducts((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
+  };
   
-  const filteredProducts = useMemo(() => {
-    const searchTerms = productSearch.toLowerCase().split(' ').filter(term => term.trim() !== '');
-    if (searchTerms.length === 0) return products;
-
-    return products.filter((p) => {
-        const productName = p.name.toLowerCase();
-        return searchTerms.every(term => productName.includes(term));
-    });
-  }, [productSearch, products]);
-
-  const addProductToInvoice = (product: Product) => {
-    if (items.find((item) => item.productId === product.id)) {
-      toast({ title: 'Product already added', description: 'This product is already in the invoice.', variant: 'destructive' });
-      return;
-    }
-    const newItem: InvoiceItem = {
+  const addSelectedProductsToInvoice = () => {
+    const productsToAdd = products.filter(p => selectedProducts.includes(p.id));
+    
+    const newItems: InvoiceItem[] = productsToAdd.map(product => ({
       productId: product.id,
       productName: product.name,
       boxes: 0,
       pieces: 0,
       total: 0,
-    };
-    setItems([...items, newItem]);
-    setProductSearch('');
+    }));
+    
+    // Filter out items that are already in the invoice
+    const uniqueNewItems = newItems.filter(newItem => !items.find(item => item.productId === newItem.productId));
+    
+    if(uniqueNewItems.length !== newItems.length) {
+        toast({ title: 'Some products already in invoice', description: 'Only new products were added.', variant: 'default' });
+    }
+
+    setItems([...items, ...uniqueNewItems]);
+    setSelectedProducts([]); // Clear selection
   };
 
   const updateItem = (productId: string, newValues: Partial<InvoiceItem>) => {
@@ -118,27 +122,9 @@ export default function NewInvoicePage() {
         }
         setIsSaving(false);
         setItems([]);
-        setProductSearch('');
     }, 1000);
   };
   
-  useEffect(() => {
-    // Show results if there's a search term or if the input is focused.
-    setShowSearchResults(productSearch.length > 0 || document.activeElement === searchContainerRef.current?.querySelector('input'));
-  }, [productSearch]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-        setShowSearchResults(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [searchContainerRef]);
-
   return (
     <div className="p-4 md:p-6">
     <div className="flex flex-col gap-6">
@@ -161,6 +147,35 @@ export default function NewInvoicePage() {
       </header>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
+           <Card>
+                <CardHeader>
+                    <CardTitle>Select Products</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ScrollArea className="h-[200px]">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {products.map((product) => (
+                                <div key={product.id} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={`prod-${product.id}`}
+                                        checked={selectedProducts.includes(product.id)}
+                                        onCheckedChange={() => handleProductSelection(product.id)}
+                                    />
+                                    <Label htmlFor={`prod-${product.id}`} className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        {product.name}
+                                    </Label>
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={addSelectedProductsToInvoice} disabled={selectedProducts.length === 0}>
+                        <Plus className="mr-2 h-4 w-4" /> Add to Invoice
+                    </Button>
+                </CardFooter>
+            </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Create Invoice</CardTitle>
@@ -178,6 +193,13 @@ export default function NewInvoicePage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
+                    {items.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                          No products added yet. Select products above to get started.
+                        </TableCell>
+                      </TableRow>
+                    )}
                     {items.map((item) => (
                       <TableRow key={item.productId}>
                         <TableCell className="font-medium">{item.productName}</TableCell>
@@ -197,31 +219,6 @@ export default function NewInvoicePage() {
                         </TableCell>
                       </TableRow>
                     ))}
-                     <TableRow>
-                        <TableCell colSpan={5} className="p-0">
-                           <div className="relative p-2" ref={searchContainerRef}>
-                            <Input
-                              placeholder="Search to add a product..."
-                              className="text-base h-12"
-                              value={productSearch}
-                              onChange={(e) => setProductSearch(e.target.value)}
-                              onFocus={() => setShowSearchResults(true)}
-                            />
-                            {showSearchResults && (
-                              <div className="absolute top-full mt-2 w-full left-0 bg-card border rounded-md shadow-lg z-10">
-                                <ScrollArea className="h-[200px]">
-                                  {(productSearch.length > 0 ? filteredProducts : products).map((p) => (
-                                    <div key={p.id} onClick={() => addProductToInvoice(p)} className="p-3 hover:bg-accent cursor-pointer flex items-center gap-2">
-                                       <Plus className="h-4 w-4 text-muted-foreground" />
-                                      {p.name}
-                                    </div>
-                                  ))}
-                                </ScrollArea>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
                   </TableBody>
                 </Table>
               </div>
