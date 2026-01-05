@@ -11,6 +11,11 @@ export const products: Product[] = [
   { id: 'prod-007', name: 'Sting Energy 250ml', sku: 'SE250', category: 'Other', priceBox: 480, pricePiece: 20, stock: 200, lowStockThreshold: 30 },
   { id: 'prod-008', name: 'Pepsi 1.5L', sku: 'P1500', category: 'Pepsi', priceBox: 480, pricePiece: 40, stock: 60, lowStockThreshold: 10 },
   { id: 'prod-009', name: '7Up 1.5L', sku: '7U1500', category: '7Up', priceBox: 480, pricePiece: 40, stock: 40, lowStockThreshold: 10 },
+  { id: 'prod-010', name: 'Tropicana Orange 1L', sku: 'TO1000', category: 'Juice', priceBox: 1200, pricePiece: 100, stock: 50, lowStockThreshold: 15 },
+  { id: 'prod-011', name: 'Slice 600ml', sku: 'SL600', category: 'Juice', priceBox: 360, pricePiece: 30, stock: 80, lowStockThreshold: 20 },
+  { id: 'prod-012', name: 'Lipton Ice Tea 500ml', sku: 'LIT500', category: 'Other', priceBox: 300, pricePiece: 25, stock: 60, lowStockThreshold: 15 },
+  { id: 'prod-013', name: 'Aquafina Water 1L', sku: 'AQ1000', category: 'Water', priceBox: 240, pricePiece: 20, stock: 300, lowStockThreshold: 50 },
+  { id: 'prod-014', name: 'Gatorade Blue Bolt 500ml', sku: 'GBB500', category: 'Other', priceBox: 540, pricePiece: 45, stock: 70, lowStockThreshold: 20 },
 ];
 
 export const customers: Customer[] = [
