@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Printer, Save, IndianRupee, BarChart, Package, Plus } from 'lucide-react';
+import { X, Printer, Save, IndianRupee, BarChart, Package, Plus, Bluetooth } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -143,6 +143,9 @@ export default function NewInvoicePage() {
               View Reports
             </Link>
           </Button>
+           <Button variant="outline" size="icon">
+              <Bluetooth className="h-4 w-4" />
+           </Button>
         </div>
       </header>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
