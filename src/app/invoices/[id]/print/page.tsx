@@ -47,6 +47,10 @@ export default function PrintInvoicePage({ params }: { params: Promise<{ id: str
           @page {
             margin: 5mm;
           }
+          body, html, div, img {
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+          }
           body, html {
             background-color: #fff !important;
           }
@@ -74,6 +78,7 @@ export default function PrintInvoicePage({ params }: { params: Promise<{ id: str
                 height={40}
                 data-ai-hint={logoPlaceholder.imageHint}
                 priority
+                unoptimized
               />
             )}
             <h1 className="text-sm text-gray-600 mt-1">Ghajanan Enterprise</h1>
