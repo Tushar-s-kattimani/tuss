@@ -43,16 +43,16 @@ export default function PrintReportPage() {
                     @page {
                         margin: 2mm;
                     }
-                    body, html {
+                    body {
                         background-color: #fff !important;
-                        width: 100%;
                     }
                     .print-container {
                         margin: 0;
                         padding: 0;
                         box-shadow: none;
-                        width: 100%;
-                        max-width: 100%;
+                        width: 80mm;
+                        max-width: 80mm;
+                        min-width: 80mm;
                         border: none;
                     }
                     .no-print {
