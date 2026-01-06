@@ -41,95 +41,101 @@ export default function PrintInvoicePage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="bg-white text-black font-sans p-4 md:p-8 max-w-4xl mx-auto my-4 md:my-8 shadow-lg">
-      <style jsx global>{`
-        @media print {
-          @page {
-            margin: 5mm;
+    <div className="bg-gray-100 flex justify-center">
+      <div className="bg-white text-black font-sans p-4 w-full max-w-[320px] mx-auto my-4 shadow-lg print-container">
+        <style jsx global>{`
+          @media print {
+            @page {
+              margin: 2mm;
+            }
+            body, html {
+              background-color: #fff !important;
+              width: 100%;
+            }
+            .print-container {
+              margin: 0;
+              padding: 0;
+              box-shadow: none;
+              width: 100%;
+              max-width: 100%;
+              border: none;
+            }
+            .no-print {
+              display: none;
+            }
+            body, html, div, img {
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
+            }
           }
-          body, html, div, img {
-            -webkit-print-color-adjust: exact;
-            color-adjust: exact;
+          body {
+              background-color: #eee;
           }
-          body, html {
-            background-color: #fff !important;
-          }
-          .no-print {
-            display: none;
-          }
-          .print-container {
-            margin: 0;
-            padding: 0;
-            box-shadow: none;
-          }
-        }
-        body {
-            background-color: #eee;
-        }
-      `}</style>
-      <div className="print-container">
-        <header className="flex justify-between items-start pb-4 border-b border-gray-300">
-          <div>
-            {logoPlaceholder && (
-              <Image
-                src={logoPlaceholder.imageUrl}
-                alt="Ghajanan Enterprise Logo"
-                width={150}
-                height={40}
-                data-ai-hint={logoPlaceholder.imageHint}
-                priority
-                unoptimized
-              />
-            )}
-            <h1 className="text-sm text-gray-600 mt-1">Ghajanan Enterprise</h1>
-          </div>
-          <div className="text-right">
-            <h2 className="text-xl md:text-2xl font-bold uppercase">Invoice</h2>
-            <p className="text-sm">Inv #: {invoice.invoiceNumber}</p>
-            <p className="text-sm">Date: {format(new Date(invoice.date), 'dd/MM/yy')}</p>
-          </div>
-        </header>
+        `}</style>
+        <div>
+          <header className="flex justify-between items-start pb-2 border-b border-gray-300">
+            <div>
+              {logoPlaceholder && (
+                <Image
+                  src={logoPlaceholder.imageUrl}
+                  alt="Ghajanan Enterprise Logo"
+                  width={120}
+                  height={32}
+                  data-ai-hint={logoPlaceholder.imageHint}
+                  priority
+                  unoptimized
+                />
+              )}
+              <h1 className="text-xs text-gray-600 mt-1">Ghajanan Enterprise</h1>
+            </div>
+            <div className="text-right">
+              <h2 className="text-lg font-bold uppercase">Invoice</h2>
+              <p className="text-xs">Inv #: {invoice.invoiceNumber}</p>
+              <p className="text-xs">Date: {format(new Date(invoice.date), 'dd/MM/yy')}</p>
+            </div>
+          </header>
 
-        <section className="py-4">
-          <table className="w-full text-sm md:text-base">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2 text-left font-bold">Item</th>
-                <th className="p-2 text-center font-bold">Box</th>
-                <th className="p-2 text-center font-bold">Pcs</th>
-                <th className="p-2 text-right font-bold">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoice.items.map((item) => (
-                <tr key={item.productId} className="border-b border-gray-200">
-                  <td className="p-2">{item.productName}</td>
-                  <td className="p-2 text-center font-mono">{item.boxes || 0}</td>
-                  <td className="p-2 text-center font-mono">{item.pieces || 0}</td>
-                  <td className="p-2 text-right font-mono">{item.total.toFixed(2)}</td>
+          <section className="py-2">
+            <table className="w-full text-xs">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-1 text-left font-bold">Item</th>
+                  <th className="p-1 text-center font-bold">Box</th>
+                  <th className="p-1 text-center font-bold">Pcs</th>
+                  <th className="p-1 text-right font-bold">Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+              </thead>
+              <tbody>
+                {invoice.items.map((item) => (
+                  <tr key={item.productId} className="border-b border-gray-200">
+                    <td className="p-1">{item.productName}</td>
+                    <td className="p-1 text-center font-mono">{item.boxes || 0}</td>
+                    <td className="p-1 text-center font-mono">{item.pieces || 0}</td>
+                    <td className="p-1 text-right font-mono">{item.total.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
 
-        <section className="flex justify-end pt-4">
-          <div className="w-full md:w-1/2 lg:w-1/3 text-sm md:text-base">
-            <div className="flex justify-between py-1">
-              <span className="font-bold">Subtotal:</span>
-              <span className="font-mono">{invoice.subtotal.toFixed(2)}</span>
+          <section className="flex justify-end pt-2">
+            <div className="w-full text-xs">
+              <div className="flex justify-between py-1">
+                <span className="font-bold">Subtotal:</span>
+                <span className="font-mono">{invoice.subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-1 text-base font-bold border-t border-gray-300 mt-1">
+                <span>Total:</span>
+                <span className="font-mono flex items-center"><IndianRupee className="h-3 w-3 mr-1"/>{invoice.total.toFixed(2)}</span>
+              </div>
             </div>
-            <div className="flex justify-between py-2 text-lg md:text-xl font-bold border-t border-gray-300 mt-2">
-              <span>Total:</span>
-              <span className="font-mono flex items-center"><IndianRupee className="h-4 w-4 md:h-5 md:w-5 mr-1"/>{invoice.total.toFixed(2)}</span>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        <footer className="text-center text-xs text-gray-500 pt-6 border-t border-gray-300 mt-4">
-          <p>Thank you for your business!</p>
-          <p>Computer-generated invoice.</p>
-        </footer>
+          <footer className="text-center text-[10px] text-gray-500 pt-4 border-t border-gray-300 mt-2">
+            <p>Thank you for your business!</p>
+            <p>Computer-generated invoice.</p>
+          </footer>
+        </div>
       </div>
     </div>
   );
