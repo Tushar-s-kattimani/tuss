@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { ArrowLeft, IndianRupee, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowLeft, IndianRupee, Calendar as CalendarIcon, Printer } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
@@ -12,19 +13,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Logo } from '@/components/logo';
-import type { Invoice, InvoiceItem } from '@/lib/types';
+import type { Invoice, InvoiceItem, ProductSummary } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { useToast } from '@/hooks/use-toast';
 
-interface ProductSummary {
-  productId: string;
-  productName: string;
-  totalBoxes: number;
-  totalPieces: number;
-  totalAmount: number;
-}
 
 export default function ReportsPage() {
+  const router = useRouter();
+  const { toast } = useToast();
   const [allInvoices, setAllInvoices] = useState<Invoice[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [date, setDate] = useState<DateRange | undefined>(() => {
@@ -50,7 +47,6 @@ export default function ReportsPage() {
     const fromDate = new Date(date.from);
     fromDate.setHours(0, 0, 0, 0); 
     
-    // If only 'from' is selected, 'to' should be the same day
     const toDate = date.to ? new Date(date.to) : new Date(date.from);
     toDate.setHours(23, 59, 59, 999);
 
@@ -88,6 +84,41 @@ export default function ReportsPage() {
     };
   }, [filteredInvoices]);
 
+  const handlePrintReport = () => {
+    if (productSummary.length === 0) {
+      toast({
+        title: 'Cannot Print Report',
+        description: 'There is no sales data for the selected period.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    const reportData = {
+        dateRange: {
+            from: date?.from ? format(date.from, 'LLL dd, y') : 'N/A',
+            to: date?.to ? format(date.to, 'LLL dd, y') : (date?.from ? format(date.from, 'LLL dd, y') : 'N/A'),
+        },
+        productSummary,
+        grandTotal,
+        totalInvoices: filteredInvoices.length,
+    };
+
+    sessionStorage.setItem('latestReport', JSON.stringify(reportData));
+    
+    toast({ title: 'Report Generated!', description: 'Preparing for printing...' });
+    
+    setTimeout(() => {
+        const printUrl = `/reports/print`;
+        const printWindow = window.open(printUrl, '_blank');
+        if (printWindow) {
+          printWindow.focus();
+        } else {
+          router.push(printUrl);
+        }
+    }, 1000);
+  };
+
   if (!isClient) {
     return null; // Avoid rendering on the server
   }
@@ -96,7 +127,7 @@ export default function ReportsPage() {
     <div className="p-4 md:p-6">
       <header className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
         <Logo />
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
            <div className={cn('grid gap-2')}>
               <Popover>
                 <PopoverTrigger asChild>
@@ -104,7 +135,7 @@ export default function ReportsPage() {
                     id="date"
                     variant={'outline'}
                     className={cn(
-                      'w-[300px] justify-start text-left font-normal',
+                      'w-full md:w-[300px] justify-start text-left font-normal',
                       !date && 'text-muted-foreground'
                     )}
                   >
@@ -135,6 +166,10 @@ export default function ReportsPage() {
                 </PopoverContent>
               </Popover>
             </div>
+            <Button onClick={handlePrintReport}>
+                <Printer className="mr-2 h-4 w-4" />
+                Print Report
+            </Button>
           <Button asChild variant="outline">
             <Link href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />

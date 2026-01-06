@@ -25,3 +25,21 @@ export interface Invoice {
   subtotal: number;
   total: number;
 }
+
+export interface ProductSummary {
+  productId: string;
+  productName: string;
+  totalBoxes: number;
+  totalPieces: number;
+  totalAmount: number;
+}
+
+export interface ReportData {
+    dateRange: {
+        from: string;
+        to: string;
+    };
+    productSummary: ProductSummary[];
+    grandTotal: number;
+    totalInvoices: number;
+}
